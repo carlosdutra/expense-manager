@@ -1,0 +1,27 @@
+.grid-container {
+  display: grid;
+  grid-template-columns: 20% 1fr;
+  grid-template-rows: auto auto auto auto;
+  gap: 10px 10px;
+  grid-template-areas:
+    "header header"
+    "sidenav main"
+    "sidenav main"
+    "footer footer";
+}
+
+.header {
+  grid-area: header;
+}
+
+.sidenav {
+  grid-area: sidenav;
+}
+
+.main {
+  grid-area: main;
+}
+
+.footer {
+  grid-area: footer;
+}
