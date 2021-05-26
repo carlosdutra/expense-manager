@@ -1,7 +1,15 @@
 import React, { useState } from "react";
-import { Pane, Dialog, TextInputField, Button, toaster, PlusIcon } from "evergreen-ui";
+import {
+  Pane,
+  Dialog,
+  TextInputField,
+  Button,
+  toaster,
+  PlusIcon,
+} from "evergreen-ui";
 import TextCurrencyField from "ui/TextCurrencyField";
 import { v4 as uuidv4 } from "uuid";
+import { format } from 'date-fns';
 import "./AddExpenseForm.css";
 
 const AddExpenseForm = (props) => {
@@ -83,11 +91,18 @@ const AddExpenseForm = (props) => {
                   // validationMessage="This field is required"
                 />
               </Pane>
-              <Pane className="form__control">
+              <Pane className="form__control" marginBottom={24}>
+                <Pane marginBottom={8}>
+                  <label className="datepicker__label">
+                    How much was your expense? *
+                  </label>
+                  <p className="datepicker__description">
+                    Please provide the value of the expense
+                  </p>
+                </Pane>
                 <TextCurrencyField
-                  label="How much was it?"
-                  description="Please provide the value of the expense"
-                  placeholder="E.g. $100"
+                  className="datepicker__input"
+                  placeholder="CA$0.00"
                   value={expense.expenseValue}
                   onChange={handleValueChange}
                   required
@@ -106,7 +121,7 @@ const AddExpenseForm = (props) => {
                 <input
                   type="date"
                   className="datepicker__input"
-                  max={new Date().toISOString().split("T")[0]}
+                  max={format(new Date(), 'yyyy-MM-dd')}
                   value={expense.expenseDate}
                   onChange={handleDateChange}
                   required
@@ -126,7 +141,9 @@ const AddExpenseForm = (props) => {
         </Pane>
       </Dialog>
 
-      <Button iconAfter={PlusIcon} onClick={() => setIsShown(true)}>Add a new expense</Button>
+      <Button iconAfter={PlusIcon} onClick={() => setIsShown(true)}>
+        Add a new expense
+      </Button>
     </Pane>
   );
 };

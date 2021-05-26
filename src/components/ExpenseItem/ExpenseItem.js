@@ -18,7 +18,7 @@ const ExpenseItem = ({ title, value, date }) => {
       <Pane className="flex justify-between items-center">
         <Pane className="flex items-center w-1/2 gap-x-6">
           <Strong size={300}>{date}</Strong>
-          <Strong>CA${value}</Strong>
+          <Strong>{value}</Strong>
           <Heading size={700}>{title}</Heading>
         </Pane>
 
