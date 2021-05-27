@@ -50,6 +50,8 @@ const ExpensesList = () => {
   });
   const monthsIndexes = Object.keys(groupExpensesByMonthOfCurrentYear).map(n => parseInt(n));
 
+  console.log(expenseTotalByMonthOfCurrentYear, monthsIndexes);
+
   // Sum Expenses by current year, month, week and day
   const getYearTotal = () =>
     CUR(

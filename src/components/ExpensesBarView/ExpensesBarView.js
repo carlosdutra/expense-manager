@@ -7,8 +7,10 @@ const ExpensesBarView = (props) => {
     });
   });
 
-  let data = Array(12).fill(0);
-  props.months.map((m) => data.splice(m - 1, 1, props.data[m - 1]));
+  let data = new Array(12).fill(0);
+  props.months.map((m, i) => data.splice(m - 1, 1, props.data[i]));
+
+  console.log(data);
 
   const dataBar = {
     labels: months,
