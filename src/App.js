@@ -10,11 +10,12 @@ function App() {
     <Router>
       <div className="App grid-container">
         <TopMenu />
-        <SideNav />
-        <Switch>
+        {/* <SideNav /> */}
+        <ExpensesList />
+        {/* <Switch>
           <Route path="/" exact component={ExpensesList} />
           <Route path="/reports" component={ExpensesOverview} />
-        </Switch>
+        </Switch> */}
       </div>
     </Router>
   );

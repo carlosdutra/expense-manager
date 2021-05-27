@@ -1,93 +1,124 @@
 import React, { useState } from "react";
 import AddExpenseForm from "components/AddExpenseForm";
 import ExpenseItem from "components/ExpenseItem";
+import ExpensesBarView from "components/ExpensesBarView";
 import { Pane, Heading, Paragraph, InfoSignIcon, Strong } from "evergreen-ui";
 import {
   format,
   compareAsc,
+  isThisYear,
   isThisMonth,
-  isToday,
   isThisWeek,
+  isToday,
   startOfWeek,
   endOfWeek,
 } from "date-fns";
 import currency from "currency.js";
+import _ from "lodash";
 
 const ExpensesList = () => {
   // Get Local Storage
   let existingEntries = JSON.parse(localStorage.getItem("allEntries")) || [];
 
   // State
-  const [expenses, setExpenses] = useState([]);
+  const [expenses, setExpenses] = useState(existingEntries);
+
+  // Currency
+  const CUR = (value) => currency(value, { symbol: "CA$" });
 
   // Save expense item to state
   const saveExpenses = (expense) => {
     setExpenses([...expenses, expense]);
-
     existingEntries.push(expense);
     localStorage.setItem("allEntries", JSON.stringify(existingEntries));
   };
 
-  const getAllExpensesTotal = () => {
-    return existingEntries.length > 0
-      ? existingEntries.reduce(
-          (a, b) => a + (currency(b["value"]).value || 0),
-          0
-        )
-      : "0";
-  };
+  // Group Expenses by periods
+  // let groupExpensesByYear = _.groupBy(expenses, (result) => format(new Date(result.date), 'yyyy'))
+  // let groupExpensesByMonthSortByDate = _.sortBy(groupExpensesByMonth, (result) => format(new Date(result.date), 'yyyy_M'));
+  // let groupExpensesByWeek = _.groupBy(expenses, (result) => format(new Date(result.date), 'yyyy_M_w'))
+
+  // Feed Overview Monthly Chart of Current Year
+  let groupExpensesByMonthOfCurrentYear = _.groupBy(
+    expenses.filter((e) => isThisYear(new Date(e.date))),
+    (result) => format(new Date(result.date), "M")
+  );
+  const expenseTotalByMonthOfCurrentYear = Object.keys(groupExpensesByMonthOfCurrentYear).map((k) => {
+    return groupExpensesByMonthOfCurrentYear[k]
+      .map((r) => parseFloat(r.value))
+      .reduce((acc, cur) => acc + cur, 0);
+  });
+  const monthsIndexes = Object.keys(groupExpensesByMonthOfCurrentYear).map(n => parseInt(n));
+
+  // Sum Expenses by current year, month, week and day
+  const getYearTotal = () =>
+    CUR(
+      expenses
+        .filter((e) => isThisYear(new Date(e.date)))
+        .reduce((a, b) => a + (currency(b["value"]).value || 0), 0)
+    ).format();
 
   const getMonthTotal = () =>
-    existingEntries
-      .filter((e) => isThisMonth(new Date(e.date)))
-      .reduce((a, b) => a + (currency(b["value"]).value || 0), 0);
+    CUR(
+      expenses
+        .filter((e) => isThisMonth(new Date(e.date)))
+        .reduce((a, b) => a + (currency(b["value"]).value || 0), 0)
+    ).format();
 
   const getWeekTotal = () =>
-    existingEntries
-      .filter((e) => isThisWeek(new Date(e.date)))
-      .reduce((a, b) => a + (currency(b["value"]).value || 0), 0);
+    CUR(
+      expenses
+        .filter((e) => isThisWeek(new Date(e.date)))
+        .reduce((a, b) => a + (currency(b["value"]).value || 0), 0)
+    ).format();
 
   const getTodaysTotal = () =>
-    existingEntries
-      .filter((e) => isToday(new Date(e.date)))
-      .reduce((a, b) => a + (currency(b["value"]).value || 0), 0);
+    CUR(
+      expenses
+        .filter((e) => isToday(new Date(e.date)))
+        .reduce((a, b) => a + (currency(b["value"]).value || 0), 0)
+    ).format();
 
   return (
     <Pane className="main px-4">
       <Pane className="container mx-auto">
+        <Pane className="flex mb-6 gap-6">
+          <Pane className="w-auto">
 
-        <Pane className="flex mb-3">
-          <Pane>
-            <Strong>Total Expenses</Strong>
-            <Paragraph size={300}>
-              This is how much you have spent so far
-            </Paragraph>
-            <Heading size={900}>CA${getAllExpensesTotal()}</Heading>
-          </Pane>
-          <Pane>Chart will go here</Pane>
-        </Pane>
+            <Pane className="mb-3">
+              <Strong>Total Expenses</Strong>
+              <Paragraph size={300}>
+                This is how much you have spent this year
+              </Paragraph>
+              <Heading size={900}>{getYearTotal()}</Heading>
+            </Pane>
 
-        <Pane className="flex gap-16">
-          <Pane className="mb-3">
-            <Strong>{format(new Date(), "MMM yyyy")}</Strong>
-            <Paragraph size={300}>Your total for this month</Paragraph>
-            <Heading size={900}>CA${getMonthTotal()}</Heading>
+            <Pane className="mb-3">
+              <Strong>{format(new Date(), "MMM yyyy")}</Strong>
+              <Paragraph size={300}>Your total for this month</Paragraph>
+              <Heading size={800}>{getMonthTotal()}</Heading>
+            </Pane>
+
+            <Pane className="mb-3">
+              <Strong>
+                {format(startOfWeek(new Date()), "MMM do")} -{" "}
+                {format(endOfWeek(new Date()), "MMM do")}
+              </Strong>
+              <Paragraph size={300}>Your total for this week</Paragraph>
+              <Heading size={800}>{getWeekTotal()}</Heading>
+            </Pane>
+
+            <Pane className="mb-3">
+              <Strong>{format(new Date(), "EEEE, MMM do yyyy")}</Strong>
+              <Paragraph size={300}>Your total today</Paragraph>
+              <Heading size={800}>{getTodaysTotal()}</Heading>
+            </Pane>
           </Pane>
 
-          <Pane className="mb-3">
-            <Strong>
-              {format(startOfWeek(new Date()), "MMM do")} -{" "}
-              {format(endOfWeek(new Date()), "MMM do")}
-            </Strong>
-            <Paragraph size={300}>Your total for this week</Paragraph>
-            <Heading size={900}>CA${getWeekTotal()}</Heading>
+          <Pane className="w-full">
+            <ExpensesBarView data={expenseTotalByMonthOfCurrentYear} months={monthsIndexes} />
           </Pane>
 
-          <Pane className="mb-3">
-            <Strong>{format(new Date(), "EEEE, MMM do yyyy")}</Strong>
-            <Paragraph size={300}>Your total today</Paragraph>
-            <Heading size={900}>CA${getTodaysTotal()}</Heading>
-          </Pane>
         </Pane>
 
         <AddExpenseForm onSubmitExpense={saveExpenses} />
@@ -100,8 +131,9 @@ const ExpensesList = () => {
               <ExpenseItem
                 key={i}
                 title={expense.title}
-                value={expense.value}
-                date={expense.date}
+                value={CUR(expense.value).format()}
+                date={new Date(expense.date).toDateString()}
+                // date={format(new Date(expense.date), 'MMM do yyyy')}
               />
             ))
         ) : (

@@ -5,8 +5,8 @@
   gap: 10px 10px;
   grid-template-areas:
     "header header"
-    "sidenav main"
-    "sidenav main"
+    "main main"
+    "main main"
     "footer footer";
 }
 

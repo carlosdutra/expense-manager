@@ -11,15 +11,16 @@ import TextCurrencyField from "ui/TextCurrencyField";
 import { v4 as uuidv4 } from "uuid";
 import { format } from 'date-fns';
 import "./AddExpenseForm.css";
+import currency from 'currency.js'
 
 const AddExpenseForm = (props) => {
   // State
   const [isShown, setIsShown] = useState(false);
 
   const [expense, setExpense] = useState({
-    expenseTitle: "",
-    expenseValue: "",
-    expenseDate: "",
+    expenseTitle: undefined,
+    expenseValue: undefined,
+    expenseDate: undefined,
   });
 
   // Handlers
@@ -55,17 +56,18 @@ const AddExpenseForm = (props) => {
     const combinedData = {
       id: uuidv4(),
       title: expense.expenseTitle,
-      value: expense.expenseValue,
-      date: new Date(expense.expenseDate + " 00:00:00").toDateString(),
+      value: currency(expense.expenseValue),
+      // date: new Date(expense.expenseDate + " 00:00:00").toDateString(),
+      date: new Date(expense.expenseDate.replace(/-/g, '\/')).toISOString(),
     };
 
     props.onSubmitExpense(combinedData);
 
     // Clear form
     setExpense({
-      expenseTitle: "",
-      expenseValue: "",
-      expenseDate: "",
+      expenseTitle: undefined,
+      expenseValue: undefined,
+      expenseDate: undefined,
     });
   };
 
