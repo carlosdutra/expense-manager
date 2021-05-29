@@ -1,3 +1,5 @@
+import React, { useState } from "react";
+// import DeleteExpense from "components/DeleteExpense";
 import {
   Heading,
   Pane,
@@ -7,8 +9,9 @@ import {
   Badge,
   IconButton,
 } from "evergreen-ui";
+import DeleteExpense from "components/DeleteExpense";
 
-const ExpenseItem = ({ title, value, date }) => {
+const ExpenseItem = ({ id, title, value, date, onDelete }) => {
   return (
     <Pane className="my-2" elevation={1} padding={20}>
       <Pane>
@@ -28,12 +31,7 @@ const ExpenseItem = ({ title, value, date }) => {
             appearance="minimal"
             onClick={() => alert("Edit item")}
           />
-          <IconButton
-            icon={TrashIcon}
-            appearance="minimal"
-            intent="danger"
-            onClick={() => alert("Delete item")}
-          />
+          <DeleteExpense id={id} onDelete={onDelete} />
         </Pane>
       </Pane>
     </Pane>

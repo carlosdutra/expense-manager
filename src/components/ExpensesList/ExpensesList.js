@@ -33,6 +33,12 @@ const ExpensesList = () => {
     localStorage.setItem("allEntries", JSON.stringify(existingEntries));
   };
 
+  const deleteExpense = (id) => {
+    const filteredArray = expenses.filter((e) => e.id !== id)
+    setExpenses(filteredArray);
+    localStorage.setItem("allEntries", JSON.stringify(filteredArray));
+  }
+
   // Group Expenses by periods
   // let groupExpensesByYear = _.groupBy(expenses, (result) => format(new Date(result.date), 'yyyy'))
   // let groupExpensesByMonthSortByDate = _.sortBy(groupExpensesByMonth, (result) => format(new Date(result.date), 'yyyy_M'));
@@ -125,16 +131,18 @@ const ExpensesList = () => {
 
         <AddExpenseForm onSubmitExpense={saveExpenses} />
 
-        <Heading size={600}>Your expenses ({existingEntries.length})</Heading>
-        {existingEntries.length > 0 ? (
-          existingEntries
+        <Heading size={600}>Your expenses ({expenses.length})</Heading>
+        {expenses.length > 0 ? (
+          expenses
             .sort((a, b) => new Date(b.date) - new Date(a.date))
-            .map((expense, i) => (
+            .map((expense) => (
               <ExpenseItem
-                key={i}
+                key={expense.id}
+                id={expense.id}
                 title={expense.title}
                 value={CUR(expense.value).format()}
                 date={new Date(expense.date).toDateString()}
+                onDelete={deleteExpense}
                 // date={format(new Date(expense.date), 'MMM do yyyy')}
               />
             ))
